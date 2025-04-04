@@ -32,6 +32,14 @@ func main() {
 		},
 	}
 
+	config.Components.SecuritySchemes = map[string]*huma.SecurityScheme{
+		"BearerAuth": {
+			Type:         "http",
+			Scheme:       "bearer",
+			BearerFormat: "JWT",
+		},
+	}
+
 	api := humagin.New(r, config)
 
 	huma.Register[handlers.CreateLicenseInput, models.License](api, huma.Operation{
@@ -39,6 +47,9 @@ func main() {
 		Path:        "/licenses",
 		Summary:     "Create a license",
 		Description: "Create a new software license",
+		Security: []map[string][]string{
+			{"BearerAuth": {}},
+		},
 	}, handlers.CreateLicenseHandler)
 
 	huma.Register[handlers.UpdateLicenseInput, models.License](api, huma.Operation{
@@ -46,6 +57,9 @@ func main() {
 		Path:        "/licenses/{shortname}",
 		Summary:     "Update a license",
 		Description: "Update an existing license by its short name",
+		Security: []map[string][]string{
+			{"BearerAuth": {}},
+		},
 	}, handlers.UpdateLicenseHandler)
 
 	if err := r.Run(":" + port); err != nil {
